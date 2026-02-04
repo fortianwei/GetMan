@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "同步全局 Hooks",
+  "description": "从全局目录同步 hooks 到当前项目，确保所有项目使用相同的 hooks 配置",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "请检查全局 hooks 目录 (~/.kiro/global-hooks/) 和当前项目的 hooks 目录 (.kiro/hooks/)，比较两边的文件，将全局目录中有但本地没有的 hooks 复制到本地。如果本地已有同名文件，跳过。完成后报告同步结果。"
+  }
+}

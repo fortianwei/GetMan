@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Git Auto Commit",
+  "description": "在每次提交prompt前，自动将当前更改保存到git。如果仓库未初始化，会先初始化git并创建常用的.gitignore文件",
+  "version": "1",
+  "when": {
+    "type": "promptSubmit"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "在执行用户请求之前，请先检查git状态并保存当前更改：\n\n1. 首先检查是否已初始化git仓库（检查.git文件夹是否存在）\n2. 如果没有初始化git：\n   - 运行 `git init`\n   - 创建一个常用的 .gitignore 文件，包含：node_modules/, .env, .env.local, *.log, .DS_Store, Thumbs.db, dist/, build/, .cache/, *.tmp, .idea/, .vscode/settings.json 等常见忽略项\n   - 运行 `git add .` 和 `git commit -m \"Initial commit\"`\n3. 如果已有git仓库：\n   - 检查是否有未提交的更改\n   - 如果有更改，运行 `git add .` 和 `git commit -m \"Auto save before update\"`\n4. 完成git操作后，继续执行用户的原始请求"
+  }
+}
