@@ -815,3 +815,38 @@ body {
 .split-pane > .response-panel {
   min-height: 100px;
 }
+
+/* Collection item */
+.collection-item {
+  font-weight: 600;
+}
+
+.collection-item svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.collapse-icon {
+  width: 16px;
+  font-size: 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: transform 0.15s;
+  display: inline-block;
+  transform: rotate(90deg);
+}
+
+.collapse-icon.collapsed {
+  transform: rotate(0deg);
+}
+
+.collapse-icon:hover {
+  color: var(--text-primary);
+}
+
+.collection-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: normal;
+}

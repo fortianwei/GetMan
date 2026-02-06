@@ -43,6 +43,7 @@ function App() {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; type: 'collection' | 'request'; id: number } | null>(null);
   const [authType, setAuthType] = useState<'none' | 'basic' | 'bearer'>('none');
   const [authData, setAuthData] = useState({ username: '', password: '', token: '' });
+  const [collapsedCollections, setCollapsedCollections] = useState<Set<number>>(new Set());
 
   const [showTools, setShowTools] = useState(false);
   const [showCodeGen, setShowCodeGen] = useState(false);
@@ -448,20 +449,35 @@ function App() {
                   onKeyDown={e => { if (e.key === 'Enter' && newCollectionName.trim()) { store.createCollection(newCollectionName.trim()); setNewCollectionName(''); }}} />
                 <button className="icon-btn" onClick={() => { if (newCollectionName.trim()) { store.createCollection(newCollectionName.trim()); setNewCollectionName(''); }}}>+</button>
               </div>
-              {store.collections.map(col => (
-                <div key={col.id}>
-                  <div className="tree-item" style={{ fontWeight: 600 }} onContextMenu={e => col.id && handleContextMenu(e, 'collection', col.id)}>
-                    <span>📁</span><span className="name">{col.name}</span>
-                  </div>
-                  {store.requests.filter(r => r.collection_id === col.id).map(req => (
-                    <div key={req.id} className="tree-item" style={{ paddingLeft: 24 }}
-                      onClick={() => openRequestInTab(req)} onContextMenu={e => req.id && handleContextMenu(e, 'request', req.id)}>
-                      <span className={`method ${getMethodClass(req.method)}`}>{req.method}</span>
-                      <span className="name">{req.name}</span>
+              {store.collections.map(col => {
+                const isCollapsed = col.id ? collapsedCollections.has(col.id) : false;
+                const toggleCollapse = () => {
+                  if (!col.id) return;
+                  setCollapsedCollections(prev => {
+                    const next = new Set(prev);
+                    if (next.has(col.id!)) next.delete(col.id!);
+                    else next.add(col.id!);
+                    return next;
+                  });
+                };
+                return (
+                  <div key={col.id}>
+                    <div className="tree-item collection-item" onContextMenu={e => col.id && handleContextMenu(e, 'collection', col.id)}
+                      onDoubleClick={() => { const n = prompt('重命名集合:', col.name); if (n && col.id) store.renameCollection(col.id, n); }}>
+                      <span className={`collapse-icon ${isCollapsed ? 'collapsed' : ''}`} onClick={toggleCollapse}>▶</span>
+                      {Icons.folder}<span className="name">{col.name}</span>
+                      <span className="collection-count">{store.requests.filter(r => r.collection_id === col.id).length}</span>
                     </div>
-                  ))}
-                </div>
-              ))}
+                    {!isCollapsed && store.requests.filter(r => r.collection_id === col.id).map(req => (
+                      <div key={req.id} className="tree-item" style={{ paddingLeft: 32 }}
+                        onClick={() => openRequestInTab(req)} onContextMenu={e => req.id && handleContextMenu(e, 'request', req.id)}>
+                        <span className={`method ${getMethodClass(req.method)}`}>{req.method}</span>
+                        <span className="name">{req.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
               {store.requests.filter(r => !r.collection_id).map(req => (
                 <div key={req.id} className="tree-item" onClick={() => openRequestInTab(req)}
                   onContextMenu={e => req.id && handleContextMenu(e, 'request', req.id)}>
