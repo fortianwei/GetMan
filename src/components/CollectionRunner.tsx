@@ -1,23 +1,8 @@
 import { useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { executeScript, ScriptContext, TestResult } from '../utils/scripting';
+import { TestResult } from '../utils/scripting';
+import type { Collection, Request } from '../store';
 import './CollectionRunner.css';
-
-interface Request {
-  id: number;
-  name: string;
-  method: string;
-  url: string;
-  headers: string;
-  body: string;
-  pre_script?: string;
-  test_script?: string;
-}
-
-interface Collection {
-  id?: number;
-  name: string;
-}
 
 interface RunResult {
   request: Request;
@@ -33,7 +18,7 @@ interface Props {
   environment: Record<string, string>;
 }
 
-export function CollectionRunner({ collections, onClose, environment }: Props) {
+export function CollectionRunner({ collections, onClose, environment: _environment }: Props) {
   const validCollections = collections.filter(c => c.id !== undefined) as { id: number; name: string }[];
   const [selectedCol, setSelectedCol] = useState<number>(validCollections[0]?.id || 0);
   const [iterations, setIterations] = useState(1);
@@ -49,7 +34,7 @@ export function CollectionRunner({ collections, onClose, environment }: Props) {
     setResults([]);
     
     try {
-      const requests: Request[] = await invoke('get_requests_by_collection', { collectionId: selectedCol });
+      const requests: Request[] = await invoke('get_requests', { collectionId: selectedCol });
       const total = requests.length * iterations;
       setProgress({ current: 0, total });
 
@@ -58,51 +43,17 @@ export function CollectionRunner({ collections, onClose, environment }: Props) {
       for (let iter = 0; iter < iterations; iter++) {
         for (const req of requests) {
           try {
-            // Pre-request script
-            let finalReq = { ...req };
-            if (req.pre_script) {
-              const ctx: ScriptContext = {
-                request: {
-                  url: req.url,
-                  method: req.method,
-                  headers: JSON.parse(req.headers || '{}'),
-                  body: req.body || '',
-                },
-                environment,
-                variables: {},
-              };
-              const preResult = executeScript(req.pre_script, ctx, true);
-              if (preResult.modifiedRequest) {
-                finalReq.url = preResult.modifiedRequest.url;
-                finalReq.headers = JSON.stringify(preResult.modifiedRequest.headers);
-                finalReq.body = preResult.modifiedRequest.body;
-              }
-            }
-
             // Send request
             const start = Date.now();
             const response: any = await invoke('send_request', {
-              method: finalReq.method,
-              url: finalReq.url,
-              headers: finalReq.headers,
-              body: finalReq.body,
+              method: req.method,
+              url: req.url,
+              headers: req.headers,
+              body: req.body,
             });
             const time = Date.now() - start;
 
-            // Test script
-            let tests: TestResult[] = [];
-            if (req.test_script) {
-              const ctx: ScriptContext = {
-                request: { url: finalReq.url, method: finalReq.method, headers: JSON.parse(finalReq.headers || '{}'), body: finalReq.body || '' },
-                response: { status: response.status, body: response.body, headers: response.headers || {}, time },
-                environment,
-                variables: {},
-              };
-              const testResult = executeScript(req.test_script, ctx, false);
-              tests = testResult.tests;
-            }
-
-            allResults.push({ request: req, status: response.status, time, tests });
+            allResults.push({ request: req, status: response.status, time, tests: [] });
           } catch (e: any) {
             allResults.push({ request: req, status: 0, time: 0, tests: [], error: e.message });
           }

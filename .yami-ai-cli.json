@@ -1,0 +1,50 @@
+{
+  "tools": [
+    "kiro"
+  ],
+  "preset": "frontend",
+  "mode": "reference",
+  "resources": [
+    {
+      "name": "code-module-analyzer",
+      "type": "skills"
+    },
+    {
+      "name": "code-simplifier",
+      "type": "skills"
+    },
+    {
+      "name": "control-browser",
+      "type": "skills"
+    },
+    {
+      "name": "dev-doc-generator",
+      "type": "skills"
+    },
+    {
+      "name": "figma-plugin-architect",
+      "type": "skills"
+    },
+    {
+      "name": "frontend-test-plan-generator",
+      "type": "skills"
+    },
+    {
+      "name": "ui-ux-pro-max",
+      "type": "skills"
+    },
+    {
+      "name": "excel",
+      "type": "powers"
+    },
+    {
+      "name": "playwright_mcp",
+      "type": "mcp"
+    },
+    {
+      "name": "code-commit",
+      "type": "hooks"
+    }
+  ],
+  "importedAt": "2026-02-11T15:13:11.730Z"
+}

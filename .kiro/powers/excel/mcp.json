@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "excel": {
+      "command": "uvx",
+      "args": ["excel-mcp-server", "stdio"],
+      "autoApprove": ["read_data_from_excel"],
+      "disabled": true
+    }
+  }
+}
