@@ -20,7 +20,7 @@
         "CDP_URL": "http://localhost:9222",
         "PLAYWRIGHT_MCP_OUTPUT_DIR": ""
       },
-      "disabled": true,
+      "disabled": false,
       "autoApprove": []
     }
   }

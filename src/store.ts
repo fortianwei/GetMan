@@ -1,5 +1,51 @@
-import { create } from 'zustand';
-import { invoke } from '@tauri-apps/api/core';
+﻿import { create } from 'zustand';
+
+// 检测是否在 Tauri 环境中
+const isTauri = !!(window as Record<string, unknown>).__TAURI_INTERNALS__;
+
+// 安全的 invoke 封装，浏览器环境返回默认值
+async function safeInvoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T> {
+  if (isTauri) {
+    const { invoke } = await import('@tauri-apps/api/core');
+    return invoke<T>(cmd, args);
+  }
+  const defaults: Record<string, unknown> = {
+    get_collections: [],
+    get_requests: [],
+    get_environments: [],
+    get_history: [],
+    get_variables: [],
+    create_collection: 1,
+    save_request: 1,
+  };
+  return (defaults[cmd] ?? null) as T;
+}
+
+// 浏览器环境下用 fetch 发送 HTTP 请求
+async function browserFetch(
+  method: string,
+  url: string,
+  headers: Record<string, string>,
+  body: string | null,
+): Promise<HttpResponse> {
+  const start = performance.now();
+  const res = await fetch(url, {
+    method,
+    headers,
+    body: ['GET', 'HEAD'].includes(method) ? undefined : body,
+  });
+  const time = Math.round(performance.now() - start);
+  const resBody = await res.text();
+  const resHeaders: Record<string, string> = {};
+  res.headers.forEach((v, k) => { resHeaders[k] = v; });
+  return {
+    status: res.status,
+    headers: resHeaders,
+    body: resBody,
+    time,
+    size: new Blob([resBody]).size,
+  };
+}
 
 export interface Collection {
   id?: number;
@@ -99,48 +145,58 @@ export const useStore = create<AppState>((set, get) => ({
   variables: [],
 
   loadCollections: async () => {
-    const collections = await invoke<Collection[]>('get_collections');
-    set({ collections });
+    try {
+      const collections = await safeInvoke<Collection[]>('get_collections');
+      set({ collections });
+    } catch { /* 浏览器环境忽略 */ }
   },
 
   loadRequests: async (collectionId?: number) => {
-    const requests = await invoke<Request[]>('get_requests', { collectionId });
-    set({ requests });
+    try {
+      const requests = await safeInvoke<Request[]>('get_requests', { collectionId });
+      set({ requests });
+    } catch { /* 浏览器环境忽略 */ }
   },
 
   loadEnvironments: async () => {
-    const environments = await invoke<Environment[]>('get_environments');
-    const active = environments.find(e => e.is_active);
-    set({ environments, activeEnvId: active?.id ?? null });
-    if (active?.id) {
-      get().loadVariables(active.id);
-    }
+    try {
+      const environments = await safeInvoke<Environment[]>('get_environments');
+      const active = environments.find(e => e.is_active);
+      set({ environments, activeEnvId: active?.id ?? null });
+      if (active?.id) {
+        get().loadVariables(active.id);
+      }
+    } catch { /* 浏览器环境忽略 */ }
   },
 
   loadHistory: async () => {
-    const history = await invoke<HistoryItem[]>('get_history');
-    set({ history });
+    try {
+      const history = await safeInvoke<HistoryItem[]>('get_history');
+      set({ history });
+    } catch { /* 浏览器环境忽略 */ }
   },
 
   loadVariables: async (envId: number) => {
-    const variables = await invoke<Variable[]>('get_variables', { environmentId: envId });
-    set({ variables });
+    try {
+      const variables = await safeInvoke<Variable[]>('get_variables', { environmentId: envId });
+      set({ variables });
+    } catch { /* 浏览器环境忽略 */ }
   },
 
   createCollection: async (name: string, parentId?: number) => {
-    const id = await invoke<number>('create_collection', { name, parentId });
+    const id = await safeInvoke<number>('create_collection', { name, parentId });
     get().loadCollections();
     return id;
   },
 
   deleteCollection: async (id: number) => {
-    await invoke('delete_collection', { id });
+    await safeInvoke('delete_collection', { id });
     get().loadCollections();
     get().loadRequests();
   },
 
   renameCollection: async (id: number, name: string) => {
-    await invoke('rename_collection', { id, name });
+    await safeInvoke('rename_collection', { id, name });
     get().loadCollections();
   },
 
@@ -149,13 +205,13 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   saveRequest: async (req: Request) => {
-    const id = await invoke<number>('save_request', { request: req });
+    const id = await safeInvoke<number>('save_request', { request: req });
     get().loadRequests();
     return id;
   },
 
   deleteRequest: async (id: number) => {
-    await invoke('delete_request', { id });
+    await safeInvoke('delete_request', { id });
     const { activeRequest } = get();
     if (activeRequest?.id === id) {
       set({ activeRequest: null });
@@ -164,29 +220,29 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   createEnvironment: async (name: string) => {
-    await invoke('create_environment', { name });
+    await safeInvoke('create_environment', { name });
     get().loadEnvironments();
   },
 
   setActiveEnvironment: async (id: number) => {
-    await invoke('set_active_environment', { id });
+    await safeInvoke('set_active_environment', { id });
     set({ activeEnvId: id });
     get().loadEnvironments();
   },
 
   deleteEnvironment: async (id: number) => {
-    await invoke('delete_environment', { id });
+    await safeInvoke('delete_environment', { id });
     get().loadEnvironments();
   },
 
   saveVariable: async (variable: Variable) => {
-    await invoke('save_variable', { variable });
+    await safeInvoke('save_variable', { variable });
     const { activeEnvId } = get();
     if (activeEnvId) get().loadVariables(activeEnvId);
   },
 
   deleteVariable: async (id: number) => {
-    await invoke('delete_variable', { id });
+    await safeInvoke('delete_variable', { id });
     const { activeEnvId } = get();
     if (activeEnvId) get().loadVariables(activeEnvId);
   },
@@ -201,7 +257,6 @@ export const useStore = create<AppState>((set, get) => ({
     let headersStr = activeRequest.headers;
     let body = activeRequest.body;
 
-    // Replace variables
     for (const v of variables.filter(v => v.enabled)) {
       const pattern = new RegExp(`\\{\\{${v.key}\\}\\}`, 'g');
       url = url.replace(pattern, v.value);
@@ -212,17 +267,22 @@ export const useStore = create<AppState>((set, get) => ({
     let headers: Record<string, string> = {};
     try {
       if (headersStr) headers = JSON.parse(headersStr);
-    } catch {}
+    } catch { /* 忽略解析错误 */ }
 
     try {
-      const response = await invoke<HttpResponse>('send_request', {
-        method: activeRequest.method,
-        url,
-        headers,
-        body: body || null,
-      });
+      let response: HttpResponse;
+      if (isTauri) {
+        response = await safeInvoke<HttpResponse>('send_request', {
+          method: activeRequest.method,
+          url,
+          headers,
+          body: body || null,
+        });
+      } else {
+        response = await browserFetch(activeRequest.method, url, headers, body || null);
+      }
       set({ response });
-      get().loadHistory();
+      if (isTauri) get().loadHistory();
     } catch (e) {
       set({ response: { status: 0, headers: {}, body: String(e), time: 0, size: 0 } });
     } finally {
@@ -231,7 +291,7 @@ export const useStore = create<AppState>((set, get) => ({
   },
 
   clearHistory: async () => {
-    await invoke('clear_history');
+    await safeInvoke('clear_history');
     set({ history: [] });
   },
 
