@@ -6,6 +6,18 @@
   "mode": "reference",
   "resources": [
     {
+      "name": "agent-browser",
+      "type": "skills"
+    },
+    {
+      "name": "brainstorming",
+      "type": "skills"
+    },
+    {
+      "name": "code-branch-diff",
+      "type": "skills"
+    },
+    {
       "name": "code-module-analyzer",
       "type": "skills"
     },
@@ -18,7 +30,15 @@
       "type": "skills"
     },
     {
+      "name": "deep-research-agent",
+      "type": "skills"
+    },
+    {
       "name": "dev-doc-generator",
+      "type": "skills"
+    },
+    {
+      "name": "doc-coauthoring",
       "type": "skills"
     },
     {
@@ -26,7 +46,35 @@
       "type": "skills"
     },
     {
-      "name": "frontend-test-plan-generator",
+      "name": "find-skills",
+      "type": "skills"
+    },
+    {
+      "name": "fix-eslint",
+      "type": "skills"
+    },
+    {
+      "name": "frontend-design",
+      "type": "skills"
+    },
+    {
+      "name": "github_kb",
+      "type": "skills"
+    },
+    {
+      "name": "playwright-cli",
+      "type": "skills"
+    },
+    {
+      "name": "pptx",
+      "type": "skills"
+    },
+    {
+      "name": "pr-create",
+      "type": "skills"
+    },
+    {
+      "name": "pr-publish",
       "type": "skills"
     },
     {
@@ -34,17 +82,21 @@
       "type": "skills"
     },
     {
-      "name": "excel",
-      "type": "powers"
-    },
-    {
       "name": "playwright_mcp",
       "type": "mcp"
     },
     {
-      "name": "code-commit",
+      "name": "code-commit.kiro.hook",
       "type": "hooks"
+    },
+    {
+      "name": "update-readme-docs.kiro.hook",
+      "type": "hooks"
+    },
+    {
+      "name": "global_guide.md",
+      "type": "steering"
     }
   ],
-  "importedAt": "2026-02-11T15:13:11.730Z"
+  "importedAt": "2026-02-14T14:47:59.203Z"
 }

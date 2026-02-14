@@ -1,14 +1,14 @@
 <p align="center">
-  <img src="src/assets/react.svg" width="80" alt="GetMan Logo">
-  <h1 align="center">GetMan</h1>
-  <p align="center">极简轻量的 API 测试工具</p>
-  <p align="center">
-    <a href="#功能特性">功能</a> •
-    <a href="#快速开始">快速开始</a> •
-    <a href="#截图">截图</a> •
-    <a href="#技术栈">技术栈</a> •
-    <a href="#开发">开发</a>
-  </p>
+  <img src="docs/screenshots/logo.svg" width="100" alt="GetMan Logo">
+</p>
+<h1 align="center">GetMan</h1>
+<p align="center">极简轻量的 API 测试工具</p>
+<p align="center">
+  <a href="#功能特性">功能</a> •
+  <a href="#截图预览">截图</a> •
+  <a href="#快速开始">快速开始</a> •
+  <a href="#技术栈">技术栈</a> •
+  <a href="#开发">开发</a>
 </p>
 
 ---
@@ -26,6 +26,16 @@ GetMan 回归本质：**快速、轻量、离线优先**。
 | 内存占用 | < 100 MB | 300-500 MB |
 | 需要登录 | ❌ | ✅ |
 | 离线使用 | ✅ | 部分功能 |
+
+## 截图预览
+
+### 主界面
+
+![GetMan 主界面](docs/screenshots/main-ui.png)
+
+### 响应查看
+
+![响应查看](docs/screenshots/response-view.png)
 
 ## 功能特性
 
