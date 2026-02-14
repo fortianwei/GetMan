@@ -528,14 +528,18 @@ function App() {
         </div>
 
         {/* Tabs Bar */}
-        <div className="tabs-bar">
-          {tabs.tabs.map(tab => (
-            <div key={tab.id} className={`tab-item ${tab.id === tabs.activeTabId ? 'active' : ''}`} onClick={() => tabs.setActiveTab(tab.id)}>
-              <span className={`tab-method ${getMethodClass(tab.method)}`}>{tab.method}</span>
-              <span className="tab-name">{tab.name}{tab.isDirty ? ' •' : ''}</span>
-              <button className="tab-close icon-btn" onClick={e => { e.stopPropagation(); tabs.closeTab(tab.id); }}>×</button>
-            </div>
-          ))}
+        <div className="tabs-bar-wrapper">
+          <button className="tabs-scroll-btn" onClick={() => { const el = document.querySelector('.tabs-bar'); if (el) el.scrollBy({ left: -150, behavior: 'smooth' }); }}>‹</button>
+          <div className="tabs-bar">
+            {tabs.tabs.map(tab => (
+              <div key={tab.id} className={`tab-item ${tab.id === tabs.activeTabId ? 'active' : ''}`} onClick={() => tabs.setActiveTab(tab.id)}>
+                <span className={`tab-method ${getMethodClass(tab.method)}`}>{tab.method}</span>
+                <span className="tab-name">{tab.name}{tab.isDirty ? ' •' : ''}</span>
+                <button className="tab-close icon-btn" onClick={e => { e.stopPropagation(); tabs.closeTab(tab.id); }}>×</button>
+              </div>
+            ))}
+          </div>
+          <button className="tabs-scroll-btn" onClick={() => { const el = document.querySelector('.tabs-bar'); if (el) el.scrollBy({ left: 150, behavior: 'smooth' }); }}>›</button>
           <div className="tab-add" onClick={handleNewTab}>+</div>
         </div>
 
