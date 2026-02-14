@@ -30,12 +30,45 @@ GetMan 回归本质：**快速、轻量、离线优先**。
 ## 截图预览
 
 ### 主界面
-
 ![GetMan 主界面](docs/screenshots/main-ui.png)
+
+### 请求构建
+
+| Headers 编辑 | Body 编辑 |
+|:---:|:---:|
+| ![Headers](docs/screenshots/headers-editor.png) | ![Body](docs/screenshots/body-editor.png) |
+
+| Auth 认证 | Pre/Post 脚本 |
+|:---:|:---:|
+| ![Auth](docs/screenshots/auth-editor.png) | ![Scripts](docs/screenshots/scripts-editor.png) |
 
 ### 响应查看
 
-![响应查看](docs/screenshots/response-view.png)
+| JSON 格式化 | 树形视图 |
+|:---:|:---:|
+| ![Pretty](docs/screenshots/response-view.png) | ![Tree](docs/screenshots/response-tree.png) |
+
+| 响应 Headers | 请求时序 |
+|:---:|:---:|
+| ![Headers](docs/screenshots/response-headers.png) | ![Timing](docs/screenshots/timing-chart.png) |
+
+### 高级功能
+
+| 代码生成 | WebSocket |
+|:---:|:---:|
+| ![CodeGen](docs/screenshots/code-gen.png) | ![WebSocket](docs/screenshots/websocket.png) |
+
+| 开发工具 | 集合运行器 |
+|:---:|:---:|
+| ![Tools](docs/screenshots/tools-panel.png) | ![Runner](docs/screenshots/collection-runner.png) |
+
+| 环境变量管理 | 应用设置 |
+|:---:|:---:|
+| ![Env](docs/screenshots/env-manager.png) | ![Settings](docs/screenshots/settings.png) |
+
+| 导入 cURL | 导入 OpenAPI/Postman |
+|:---:|:---:|
+| ![cURL](docs/screenshots/import-curl.png) | ![OpenAPI](docs/screenshots/import-api.png) |
 
 ## 功能特性
 
